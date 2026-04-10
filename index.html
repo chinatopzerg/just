@@ -3,17 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>湘北 SBTI：全员发疯版</title>
+    <title>湘北 SBTI 深度测试</title>
     <style>
         :root {
             --primary: #ff0000; /* 湘北红 */
             --black: #111111;
             --white: #ffffff;
-            --gray: #f4f4f4;
+            --gray: #f0f0f0;
             --border: 3px solid var(--black);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             font-family: 'Courier New', Courier, monospace;
@@ -37,35 +41,34 @@
             font-size: 2.5rem;
             text-transform: uppercase;
             border-bottom: var(--border);
-            padding-bottom: 15px;
+            padding-bottom: 10px;
             margin-bottom: 30px;
-            letter-spacing: -1px;
+            letter-spacing: -2px;
             background: var(--black);
             color: var(--white);
             text-align: center;
             transform: rotate(-1deg);
-            line-height: 1.2;
         }
 
         h2 {
             font-size: 1.4rem;
             margin-bottom: 25px;
             text-transform: uppercase;
-            font-weight: 900;
+            line-height: 1.4;
         }
 
         .btn {
             display: block;
             width: 100%;
             padding: 18px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             background: var(--white);
             border: var(--border);
             font-size: 1rem;
             font-family: inherit;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.1s;
+            transition: all 0.2s;
             text-align: left;
             box-shadow: 4px 4px 0px var(--black);
         }
@@ -85,11 +88,10 @@
         }
 
         .progress {
-            font-size: 0.9rem;
-            margin-bottom: 15px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
             text-align: right;
             font-weight: bold;
-            color: var(--primary);
         }
 
         .result-card {
@@ -101,159 +103,273 @@
         }
 
         .archetype-title {
-            font-size: 2.2rem;
+            font-size: 2rem;
             color: var(--primary);
             margin: 20px 0;
             text-decoration: underline;
             text-decoration-style: wavy;
-            text-decoration-color: var(--black);
         }
 
         .archetype-desc {
             font-size: 1.1rem;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             text-align: left;
             border-left: 5px solid var(--black);
             padding-left: 15px;
-            background: #fff;
-            padding: 15px;
         }
 
-        .hidden { display: none; }
+        .hidden {
+            display: none;
+        }
 
         @media (max-width: 480px) {
             h1 { font-size: 2rem; }
             .btn { padding: 15px; font-size: 0.95rem; }
-            .container { padding: 15px; }
-            .archetype-title { font-size: 1.8rem; }
+            .container { padding: 10px; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- 1. 开始页面 -->
+        <!-- 开始页面 -->
         <div id="start-screen">
-            <h1>湘北 SBTI<br><span style="font-size: 0.5em; color: var(--primary);">全员发疯版</span></h1>
-            <p style="margin-bottom: 30px; font-size: 1.1rem;">
-                这是一个关于你“篮球部生存现状”的测试。<br>
-                共10道题，每次随机抽取。<br>
-                <strong>警告：本测试含“吗喽”量过高，请谨慎作答。</strong>
+            <h1>湘北 SBTI<br><span style="font-size: 0.5em; color: var(--primary);">深度精神测试</span></h1>
+            <p style="margin-bottom: 30px; font-size: 1.2rem;">
+                湘北高中精神状况普查。<br>
+                共10题，请凭直觉选择。<br>
+                <strong>警告：本测试不含“热血”成分。</strong>
             </p>
-            <button class="btn btn-start" onclick="startQuiz()">开始受刑</button>
+            <button class="btn btn-start" onclick="startQuiz()">开始受难</button>
         </div>
 
-        <!-- 2. 问题页面 -->
+        <!-- 问题页面 -->
         <div id="quiz-screen" class="hidden">
             <div class="progress">问题 <span id="current-q">1</span> / 10</div>
             <h2 id="question-text">问题加载中...</h2>
             <div id="options-container"></div>
         </div>
 
-        <!-- 3. 结果页面 -->
+        <!-- 结果页面 -->
         <div id="result-screen" class="hidden">
             <div class="result-card">
-                <p>经检测，你的 SBTI 人格为：</p>
+                <p>你的 SBTI 人格是：</p>
                 <div class="archetype-title" id="result-title">...</div>
                 <div class="archetype-desc" id="result-desc">...</div>
-                <button class="btn" onclick="restartQuiz()">我不服，重测</button>
+                <button class="btn" onclick="restartQuiz()">我不服，重来</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- 题库 (扩充版) ---
-        const allQuestions = [
+        // 10道题目
+        const questions = [
             {
-                text: "Q1. 晴子小姐突然问你：‘你喜欢篮球吗？’，你会？",
+                text: "Q1. 早上上学快迟到了，你的第一反应是？",
                 options: [
-                    { text: "A. 脸红心跳，支支吾吾说不出话。", type: "A" },
-                    { text: "B. 只要是为了你，我什么都喜欢。", type: "B" },
-                    { text: "C. 这种庶民运动，也就一般般吧。", type: "C" },
-                    { text: "D. 沉默，眼神看向远方，假装没听见。", type: "D" }
+                    { text: "A. 骑车狂飙，把自行车骑出摩托车的气势。", type: "A" },
+                    { text: "B. 完了，今天肯定又要被那个红毛猴子吵死。", type: "B" },
+                    { text: "C. 迟到就迟到吧，反正我也不是第一次了。", type: "C" },
+                    { text: "D. 只要我不尴尬，尴尬的就是别人。", type: "D" },
+                    { text: "E. 默默戴上耳机，假装世界与我无关。", type: "E" },
+                    { text: "F. 只要晴子小姐不看到就好。", type: "F" }
                 ]
             },
             {
-                text: "Q2. 面对赤木刚宪（大猩猩）的怒吼，你的反应是？",
+                text: "Q2. 面对赤木刚宪（大猩猩）的咆哮，你会？",
                 options: [
-                    { text: "A. “对不起！我错了！”（滑跪）", type: "A" },
-                    { text: "B. 面无表情，心里想“这只猩猩真吵”。", type: "B" },
-                    { text: "C. “你这只大猩猩，闭嘴吧！”（对骂）", type: "C" },
-                    { text: "D. 吓得躲到安西教练身后。", type: "D" }
+                    { text: "A. 比他更凶地吼回去：“啰嗦！烦死了！”", type: "A" },
+                    { text: "B. 吓得腿软，立刻道歉：“对不起队长！”", type: "B" },
+                    { text: "C. 面无表情地看着他，等他吼完。", type: "C" },
+                    { text: "D. 心里想：“这大猩猩今天吃错药了？”", type: "D" },
+                    { text: "E. 拿起折扇给他一下：“安静点，大猩猩。”", type: "E" },
+                    { text: "F. 趁机向晴子搭话：“晴子，你哥哥好有活力。”", type: "F" }
                 ]
             },
             {
-                text: "Q3. 比赛最后3秒，球传到了你手里，但时间不够了，你会？",
+                text: "Q3. 练习赛输了，你的心态是？",
                 options: [
-                    { text: "A. 直接扔出去！姿势帅就完事了！", type: "A" },
-                    { text: "B. 传给那个红头发的白痴，让他背锅。", type: "B" },
-                    { text: "C. 强行出手，哪怕被盖帽也要证明自己是王牌。", type: "C" },
-                    { text: "D. 此时一位路过的观众（仙道）表示：如果是我就传给鱼住。", type: "D" }
+                    { text: "A. 痛哭流涕，发誓要练好三分球。", type: "B" },
+                    { text: "B. 觉得队友太菜，带不动，想单飞。", type: "C" },
+                    { text: "C. 虽然输了，但我刚才那个扣篮很帅。", type: "D" },
+                    { text: "D. 无所谓，反正我只是来混日子的。", type: "E" },
+                    { text: "E. 开始分析战术失误，准备下次赢回来。", type: "A" },
+                    { text: "F. 只要晴子小姐安慰我一句就够了。", type: "F" }
                 ]
             },
             {
-                text: "Q4. 训练迟到了，被队长罚跑圈，你心里在想？",
+                text: "Q4. 你的必杀技是？",
                 options: [
-                    { text: "A. 为什么受伤的总是我？（三井式崩溃）", type: "A" },
-                    { text: "B. 跑就跑，反正我体力好。（流川枫式冷漠）", type: "B" },
-                    { text: "C. 这种训练量根本不算什么，我要加练！", type: "C" },
-                    { text: "D. 偷偷溜去小卖部买面包。（宫城式摸鱼）", type: "D" }
+                    { text: "A. 绝对防御（靠脑子打球）。", type: "A" },
+                    { text: "B. 永不熄灭的三分球（偶尔哑火）。", type: "B" },
+                    { text: "C. 超高速运球（然后撞到人）。", type: "C" },
+                    { text: "D. 庶民上篮（朴实无华）。", type: "D" },
+                    { text: "E. 死亡凝视（物理攻击）。", type: "E" },
+                    { text: "F. 尖叫（毫无杀伤力）。", type: "F" }
                 ]
             },
             {
-                text: "Q5. 队友失误导致输掉了比赛，你会？",
+                text: "Q5. 面对强敌（如山王工业），你的态度是？",
                 options: [
-                    { text: "A. 痛哭流涕，觉得是自己没防好。", type: "A" },
-                    { text: "B. 冷冷地说一句：“白痴。”", type: "B" },
-                    { text: "C. 暴跳如雷，把板凳踢飞。", type: "C" },
-                    { text: "D. 安慰大家：“没关系，下次赢回来就好。”", type: "D" }
+                    { text: "A. “我要打倒他们，证明我是神奈川第一。”", type: "A" },
+                    { text: "B. “这就是我的极限了吗？不，我要投进这一球。”", type: "B" },
+                    { text: "C. “切，不过如此，我要过掉他们所有人。”", type: "C" },
+                    { text: "D. “天才总是被针对，但这正是我表现的机会。”", type: "D" },
+                    { text: "E. “你们这群不良少年，给我认真点！”", type: "E" },
+                    { text: "F. “只要能在场上多待一秒就好。”", type: "F" }
                 ]
             },
             {
-                text: "Q6. 你的球鞋脏了，你会？",
+                text: "Q6. 如果必须要逃课，你会去？",
                 options: [
-                    { text: "A. 那是AJ1！我舍不得穿！", type: "A" },
-                    { text: "B. 脏了就脏了，能打球就行。", type: "B" },
-                    { text: "C. 拿刷子刷得锃亮，像新的一样。", type: "C" },
-                    { text: "D. 借别人的穿，反正我不在乎。", type: "D" }
+                    { text: "A. 体育馆加练投篮。", type: "A" },
+                    { text: "B. 天台睡觉，或者去便利店买牛奶。", type: "B" },
+                    { text: "C. 小钢珠店（ pachinko ）。", type: "C" },
+                    { text: "D. 到处闲逛，寻找打架的机会。", type: "D" },
+                    { text: "E. 去管教务处的安田他们。", type: "E" },
+                    { text: "F. 去看晴子她们社团活动。", type: "F" }
                 ]
             },
             {
-                text: "Q7. 如果必须和一个讨厌的人同队，你会？",
+                text: "Q7. 别人叫你什么外号，你最不爽？",
                 options: [
-                    { text: "A. 只要为了赢，我可以忍！", type: "A" },
-                    { text: "B. 无视他，把他当空气。", type: "B" },
-                    { text: "C. 想办法在球场上废了他。", type: "C" },
-                    { text: "D. 找机会把他交易走。", type: "D" }
+                    { text: "A. 眼镜兄（虽然我也戴眼镜）。", type: "A" },
+                    { text: "B. 笨蛋 / 猴子。", type: "D" },
+                    { text: "C. 狐狸眼。", type: "C" },
+                    { text: "D. 大猩猩。", type: "A" },
+                    { text: "E. 姐头（虽然我是男的）。", type: "E" },
+                    { text: "F. 小三（虽然也没错）。", type: "B" }
                 ]
             },
             {
-                text: "Q8. 关于“天才”这个词，你的理解是？",
+                text: "Q8. 你的恋爱观是？",
                 options: [
-                    { text: "A. 我就是天才！天才樱木花道！", type: "A" },
-                    { text: "B. 只有努力的天才才是真的天才。", type: "B" },
-                    { text: "C. 天才？呵，那是给凡人准备的词汇。", type: "C" },
-                    { text: "D. 只要努力，凡人也能超越天才。", type: "D" }
+                    { text: "A. 恋爱？那是弱者才需要的东西。", type: "C" },
+                    { text: "B. 我喜欢的人是……（脸红）。", type: "F" },
+                    { text: "C. 只要不耽误我打球就行。", type: "B" },
+                    { text: "D. 我有彩子姐就够了（单相思）。", type: "D" },
+                    { text: "E. 这种小事不要来烦我。", type: "A" },
+                    { text: "F. 我只想安静地做个美男子。", type: "E" }
                 ]
             },
             {
-                text: "Q9. 看到对手在赛前挑衅，你会？",
+                text: "Q9. 如果比赛只剩最后1秒，你会？",
                 options: [
-                    { text: "A. 冲上去理论，甚至想动手。", type: "A" },
-                    { text: "B. 用眼神杀死他，然后在球场上打爆他。", type: "B" },
-                    { text: "C. 笑着拍拍他的肩膀：“你很有趣。”（然后盖他帽）", type: "C" },
-                    { text: "D. 假装没听见，专注于热身。", type: "D" }
+                    { text: "A. 把球传给位置最好的队友。", type: "A" },
+                    { text: "B. 相信队友，跑位拉开空间。", type: "B" },
+                    { text: "C. 把球给我！我要绝杀！", type: "C" },
+                    { text: "D. 篮板球！那是我的领域！", type: "D" },
+                    { text: "E. 在场下大喊：“防守！防守！”", type: "E" },
+                    { text: "F. 祈祷球能进。", type: "F" }
                 ]
             },
             {
-                text: "Q10. 比赛结束后，你最想做的一件事是？",
+                text: "Q10. 用一句话形容湘北篮球队。",
                 options: [
-                    { text: "A. 找晴子小姐要签名/合影。", type: "A" },
-                    { text: "B. 回家睡觉，谁也别吵我。", type: "B" },
-                    { text: "C. 去海边冲浪/兜风，享受胜利。", type: "C" },
-                    { text: "D. 总结今天的失误，明天继续练。", type: "D" }
+                    { text: "A. 一群问题儿童的集合体。", type: "A" },
+                    { text: "B. 只要有我在，就不会输（大概）。", type: "D" },
+                    { text: "C. 我想打篮球。", type: "B" },
+                    { text: "D. 只要赢了就有妹子。", type: "C" },
+                    { text: "E. 只有我是正常人。", type: "E" },
+                    { text: "F. 这里是地狱吗？", type: "F" }
                 ]
+            }
+        ];
+
+        // 6种人格结果
+        const results = {
+            "A": {
+                title: "【大猩猩】(The Captain)",
+                desc: "原型：赤木刚宪。你是一个背负着沉重梦想的“独裁者”。你性格刚毅，对目标有着近乎偏执的追求。虽然你经常被队友气得心梗，但你是这个团队唯一的支柱。你相信“基础”和“努力”，但内心其实也渴望有一群靠谱的伙伴。"
             },
-            {
-                text: "Q11. 面对山王工业这样的强敌，你的心态是？",
-                options
+            "B": {
+                title: "【迷途羔羊】(The Lost Soul)",
+                desc: "原型：三井寿。你是一个“曾经沧海难为水”的浪子。你经历过辉煌，也跌落过谷底。你的内心充满了矛盾和挣扎，既想放弃又想坚持。你的体力是你的硬伤，但你的意志力是神级的。只要给你一点光，你就能燃烧整个球场。"
+            },
+            "C": {
+                title: "【孤高天才】(The Lone Wolf)",
+                desc: "原型：流川枫（LL）。你是一个“莫得感情的杀手”。你的世界里只有篮球和睡觉。你极度自信，甚至有点自恋，觉得周围的人都是白痴。你不需要朋友，只需要对手。你的冷酷外表下，藏着一颗想赢的心（和对美国的向往）。"
+            },
+            "D": {
+                title: "【笨蛋人】(The Baka)",
+                desc: "原型：樱木花道。你是一个“单细胞生物”。你的大脑构造非常简单，只要被夸奖就会飘飘然。你经常干蠢事，是团队的开心果（也是麻烦制造机）。但你拥有惊人的身体素质和恢复力，你是真正的“天才”。"
+            },
+            "E": {
+                title: "【暴走姐头】(The Manager)",
+                desc: "原型：彩子。你是一个“掌控全局的吐槽役”。你虽然不常上场，但你是团队的实际管理者。你用折扇统治着这群不良少年，你的眼神能杀死人。你冷静、理智，是这个疯狂世界里唯一的正常人。"
+            },
+            "F": {
+                title: "【路人甲】(The NPC)",
+                desc: "原型：安田/桑登。你是一个“努力的普通人”。你没有天才的天赋，也没有主角的光环。你每天都在为了不被淘汰而拼命奔跑。你胆小、爱哭，但在关键时刻，你也能挺身而出。你是湘北最真实的底色。"
+            }
+        };
+
+        let currentQuestionIndex = 0;
+        let scores = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0 };
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const currentQSpan = document.getElementById('current-q');
+
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            questionText.innerText = q.text;
+            currentQSpan.innerText = currentQuestionIndex + 1;
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.innerText = opt.text;
+                btn.onclick = () => handleAnswer(opt.type);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(type) {
+            scores[type]++;
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            let maxScore = 0;
+            let resultType = 'A';
+            for (const [type, score] of Object.entries(scores)) {
+                if (score > maxScore) {
+                    maxScore = score;
+                    resultType = type;
+                }
+            }
+
+            const resultData = results[resultType];
+            document.getElementById('result-title').innerText = resultData.title;
+            document.getElementById('result-desc').innerText = resultData.desc;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            scores = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0 };
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
