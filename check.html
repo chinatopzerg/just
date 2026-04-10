@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>湘北 SBTI 精神测试</title>
+    <style>
+        :root {
+            --primary: #ff0000; /* 湘北红 */
+            --black: #111111;
+            --white: #ffffff;
+            --gray: #f0f0f0;
+            --border: 3px solid var(--black);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace; /* 复古打字机字体 */
+            background-color: var(--white);
+            color: var(--black);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* 布局容器 */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* 标题样式 */
+        h1 {
+            font-size: 3rem;
+            text-transform: uppercase;
+            border-bottom: var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            letter-spacing: -2px;
+            background: var(--black);
+            color: var(--white);
+            text-align: center;
+            transform: rotate(-1deg);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        /* 按钮通用样式 */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: var(--white);
+            border: var(--border);
+            font-size: 1.1rem;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            box-shadow: 5px 5px 0px var(--black);
+        }
+
+        .btn:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translate(2px, 2px);
+            box-shadow: 3px 3px 0px var(--black);
+        }
+
+        .btn-start {
+            background: var(--primary);
+            color: var(--white);
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        /* 进度条 */
+        .progress {
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        /* 结果卡片 */
+        .result-card {
+            border: var(--border);
+            padding: 30px;
+            background: var(--gray);
+            box-shadow: 10px 10px 0px var(--black);
+            text-align: center;
+        }
+
+        .archetype-title {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin: 20px 0;
+            text-decoration: underline;
+            text-decoration-style: wavy;
+        }
+
+        .archetype-desc {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-align: left;
+            border-left: 5px solid var(--black);
+            padding-left: 15px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 480px) {
+            h1 { font-size: 2rem; }
+            .btn { padding: 15px; font-size: 1rem; }
+            .container { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 1. 开始页面 -->
+        <div id="start-screen">
+            <h1>湘北 SBTI<br><span style="font-size: 0.5em; color: var(--primary);">精神状况测试</span></h1>
+            <p style="margin-bottom: 30px; font-size: 1.2rem;">
+                这是一个关于你篮球智商（负数）的测试。<br>
+                不要思考，凭直觉选择。<br>
+                <strong>警告：测试结果可能极其伤人。</strong>
+            </p>
+            <button class="btn btn-start" onclick="startQuiz()">开始测试</button>
+        </div>
+
+        <!-- 2. 问题页面 -->
+        <div id="quiz-screen" class="hidden">
+            <div class="progress">问题 <span id="current-q">1</span> / 4</div>
+            <h2 id="question-text">问题加载中...</h2>
+            <div id="options-container">
+                <!-- 选项将通过 JS 插入 -->
+            </div>
+        </div>
+
+        <!-- 3. 结果页面 -->
+        <div id="result-screen" class="hidden">
+            <div class="result-card">
+                <p>你的 SBTI 人格是：</p>
+                <div class="archetype-title" id="result-title">...</div>
+                <div class="archetype-desc" id="result-desc">...</div>
+                <button class="btn" onclick="restartQuiz()">再测一次 (我不服)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 题库数据
+        const questions = [
+            {
+                text: "Q1. 周一早上的第一节课，老师正在念经，你的状态是？",
+                options: [
+                    { text: "A. 流口水，梦里被赤木大猩猩追着打。", type: "A" },
+                    { text: "B. 看着窗外发呆，思考“我是谁？我在哪？”", type: "B" },
+                    { text: "C. 疯狂照镜子，或者用眼神杀死前排的红毛。", type: "C" },
+                    { text: "D. 策划逃课，或者已经在去小钢珠店的路上了。", type: "D" }
+                ]
+            },
+            {
+                text: "Q2. 面对“全国大赛”这个宏大的目标，你的第一反应是？",
+                options: [
+                    { text: "A. 什么大赛？只要晴子小姐开心就好！", type: "A" },
+                    { text: "B. 只要不受伤就行，我想回家喝牛奶。", type: "B" },
+                    { text: "C. 呵，太简单了，我只想找个地方单挑。", type: "C" },
+                    { text: "D. 赢了就有妹子，输了就切腹……开玩笑的。", type: "D" }
+                ]
+            },
+            {
+                text: "Q3. 那个戴眼镜的副队长让你去打扫体育馆，你会？",
+                options: [
+                    { text: "A. “是！交给我吧！”（然后打碎了窗户）", type: "A" },
+                    { text: "B. “……知道了。”（默默拿起扫把，毫无波澜）", type: "B" },
+                    { text: "C. 假装没听见，直接无视他走过去。", type: "C" },
+                    { text: "D. “哈？这种杂事为什么要本天才来做？”", type: "D" }
+                ]
+            },
+            {
+                text: "Q4. 如果必须用一个词形容你的“篮球生涯”，你会选？",
+                options: [
+                    { text: "A. 意外性（总是莫名其妙地进球/犯规）", type: "A" },
+                    { text: "B. 养生（只要我不跑，我就不会累）", type: "B" },
+                    { text: "C. 孤独（无敌是多么寂寞）", type: "C" },
+                    { text: "D. 天才（不需要解释，我就是天才）", type: "D" }
+                ]
+            }
+        ];
+
+        // 结果数据
+        const results = {
+            "A": {
+                title: "【笨蛋人】(The Baka)",
+                desc: "原型：樱木花道。你是一个单纯的单细胞生物。你的大脑就像刚洗过一样干净。你是“意外性No.1”的代名词，虽然经常干蠢事，但你的生命力顽强得像杂草。"
+            },
+            "B": {
+                title: "【死者】(The Dead)",
+                desc: "原型：三井寿（虚弱版）。你处于一种“精神性死亡”状态。面对强权你会膝盖发软，面对麻烦你会选择逃避。你的体力条永远是红色的，座右铭是“我想回家睡觉”。"
+            },
+            "C": {
+                title: "【孤傲者】(The Solo)",
+                desc: "原型：流川枫。你是一个“究极独狼”。除了篮球和睡觉，其他事情都是干扰。你拥有极高的天赋，但性格极其恶劣。你的字典里没有“团队”二字。"
+            },
+            "D": {
+                title: "【伪BOSS】(The Fake Boss)",
+                desc: "原型：宫城良田。你是一个“虚张声势的掌控者”。你每天都在为这个破队的未来操碎了心。你看似玩世不恭，实则深情款款，是湘北真正的保姆。"
+            }
+        };
+
+        let currentQuestionIndex = 0;
+        let scores = { A: 0, B: 0, C: 0, D: 0 };
+
+        // DOM 元素
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const currentQSpan = document.getElementById('current-q');
+
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            questionText.innerText = q.text;
+            currentQSpan.innerText = currentQuestionIndex + 1;
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.innerText = opt.text;
+                btn.onclick = () => handleAnswer(opt.type);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(type) {
+            scores[type]++;
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            // 计算最高分
+            let maxScore = 0;
+            let resultType = 'A';
+            for (const [type, score] of Object.entries(scores)) {
+                if (score > maxScore) {
+                    maxScore = score;
+                    resultType = type;
+                }
+            }
+
+            const resultData = results[resultType];
+            document.getElementById('result-title').innerText = resultData.title;
+            document.getElementById('result-desc').innerText = resultData.desc;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            scores = { A: 0, B: 0, C: 0, D: 0 };
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
